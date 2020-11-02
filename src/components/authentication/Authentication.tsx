@@ -9,6 +9,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import { useTranslation } from 'react-i18next';
 import SignInForm from '../signin/Signin';
 import SignUp from '../signup/Signup';
 import CopyRight from '../copyright/CopyRight';
@@ -42,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Authentication() {
   const classes = useStyles();
   const [isSignin, setSignIn] = useState(true);
+  const { t } = useTranslation();
 
   function showSignUpForm() {
     setSignIn(false);
@@ -61,7 +63,7 @@ export default function Authentication() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            {isSignin ? 'Sign in' : 'Sign up'}
+            {isSignin ? t('sign in') : t('sign up')}
           </Typography>
           {isSignin ? (
             <SignInForm goToSignUpForm={showSignUpForm} />

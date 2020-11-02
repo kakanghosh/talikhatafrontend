@@ -4,6 +4,7 @@ import './index.scss';
 import App from './components/app/App';
 import reportWebVitals from './reportWebVitals';
 import 'fontsource-roboto';
+import './i18n/i18n';
 
 ReactDOM.render(
   <React.StrictMode>

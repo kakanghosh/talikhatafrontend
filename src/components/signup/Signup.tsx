@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, TextField, Grid, makeStyles } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -20,9 +21,10 @@ interface SignUpFormProps {
 
 export default function SignUp({ goToSignInForm }: SignUpFormProps) {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const onFormSubmit = () => {
-    console.log('working');
+    // console.log('working');
   };
 
   return (
@@ -40,7 +42,7 @@ export default function SignUp({ goToSignInForm }: SignUpFormProps) {
             required
             fullWidth
             id="firstName"
-            label="First Name"
+            label={t('first name')}
             autoFocus
           />
         </Grid>
@@ -50,7 +52,7 @@ export default function SignUp({ goToSignInForm }: SignUpFormProps) {
             required
             fullWidth
             id="lastName"
-            label="Last Name"
+            label={t('last name')}
             name="lastName"
             autoComplete="lname"
           />
@@ -61,7 +63,7 @@ export default function SignUp({ goToSignInForm }: SignUpFormProps) {
             required
             fullWidth
             id="email"
-            label="Email Address"
+            label={t('email address')}
             name="email"
             autoComplete="email"
           />
@@ -72,7 +74,7 @@ export default function SignUp({ goToSignInForm }: SignUpFormProps) {
             required
             fullWidth
             name="password"
-            label="Password"
+            label={t('password')}
             type="password"
             id="password"
             autoComplete="current-password"
@@ -87,7 +89,7 @@ export default function SignUp({ goToSignInForm }: SignUpFormProps) {
         className={classes.submit}
         onClick={onFormSubmit}
       >
-        Sign Up
+        {t('sign up')}
       </Button>
       <Grid container justify="flex-end">
         <Grid item>
@@ -96,7 +98,7 @@ export default function SignUp({ goToSignInForm }: SignUpFormProps) {
             color="primary"
             className={classes.signInButton}
           >
-            Already have an account? Sign in
+            {t('already have an account')}
           </Button>
         </Grid>
       </Grid>
