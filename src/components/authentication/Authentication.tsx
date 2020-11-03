@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import SignInForm from '../signin/Signin';
 import SignUp from '../signup/Signup';
 import CopyRight from '../copyright/CopyRight';
+import ChangeLanguage from '../changelanguage/ChangeLanguage';
 
 const useStyles = makeStyles((theme) => ({
   auth: {
@@ -58,6 +59,11 @@ export default function Authentication() {
       <CssBaseline />
       <Grid item xs={false} sm={4} md={7} className={classes.auth__image} />
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        <Grid container justify="flex-end">
+          <Grid item>
+            <ChangeLanguage />
+          </Grid>
+        </Grid>
         <div className={classes.auth__paper}>
           <Avatar className={classes.auth__avatar}>
             <LockOutlinedIcon />
