@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, TextField, Link, Grid, makeStyles } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -18,11 +19,12 @@ interface SignInFormProps {
   goToSignUpForm: () => void;
 }
 
-const SignInForm = ({ goToSignUpForm }: SignInFormProps) => {
+export default function SignInForm({ goToSignUpForm }: SignInFormProps) {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const onFormSubmit = () => {
-    console.log('working');
+    // console.log('working');
   };
 
   return (
@@ -37,7 +39,7 @@ const SignInForm = ({ goToSignUpForm }: SignInFormProps) => {
         required
         fullWidth
         id="email"
-        label="Email Address"
+        label={t('email address')}
         name="email"
         autoComplete="email"
         autoFocus
@@ -48,7 +50,7 @@ const SignInForm = ({ goToSignUpForm }: SignInFormProps) => {
         required
         fullWidth
         name="password"
-        label="Password"
+        label={t('password')}
         type="password"
         id="password"
         autoComplete="current-password"
@@ -61,12 +63,12 @@ const SignInForm = ({ goToSignUpForm }: SignInFormProps) => {
         className={classes.submit}
         onClick={onFormSubmit}
       >
-        Sign In
+        {t('sign in')}
       </Button>
       <Grid container>
         <Grid item xs>
           <Link href="#/" variant="body2">
-            Forgot password?
+            {t('forgot password')}
           </Link>
         </Grid>
         <Grid item>
@@ -75,12 +77,10 @@ const SignInForm = ({ goToSignUpForm }: SignInFormProps) => {
             color="primary"
             className={classes.signUpButton}
           >
-            Don&apos;t have an account? Sign Up
+            {t('do not have an account')}
           </Button>
         </Grid>
       </Grid>
     </form>
   );
-};
-
-export default SignInForm;
+}

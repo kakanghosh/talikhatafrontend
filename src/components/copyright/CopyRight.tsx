@@ -1,12 +1,16 @@
 import { Link, Typography } from '@material-ui/core';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function Copyright() {
+  const { t } = useTranslation();
+
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
+      {t('copyright')}
+      {' © '}
       <Link color="inherit" href="/">
-        Tali Khata
+        {t('application name')}
       </Link>{' '}
       {new Date().getFullYear()}
     </Typography>

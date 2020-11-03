@@ -3,7 +3,11 @@ import './App.scss';
 import Authentication from '../authentication/Authentication';
 
 function App() {
-  return <Authentication />;
+  return (
+    <div>
+      <Authentication />;
+    </div>
+  );
 }
 
 export default App;
