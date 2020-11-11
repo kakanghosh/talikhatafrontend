@@ -1,12 +1,19 @@
 import React from 'react';
 import './App.scss';
-import Authentication from '../authentication/Authentication';
+import { useRoutes } from 'react-router-dom';
+import { ThemeProvider } from '@material-ui/core';
+import routes from '../../routes/Routes';
+import theme from '../../theme';
+import GlobalStyles from '../../theme/GlobalStyle';
 
 function App() {
+  const routing = useRoutes(routes);
+
   return (
-    <div>
-      <Authentication />;
-    </div>
+    <ThemeProvider theme={theme}>
+      <GlobalStyles />
+      {routing}
+    </ThemeProvider>
   );
 }
 
