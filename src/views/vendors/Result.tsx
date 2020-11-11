@@ -16,29 +16,37 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core';
+import { useNavigate } from 'react-router-dom';
 import getInitials from '../../utils/getInitials';
-import { Vendor } from './data';
+import ROUTES from '../../routes/application-routes';
+import { Vendor } from '../../core/models/Models';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
   avatar: {
     marginRight: theme.spacing(2),
   },
+  cellCursorPointer: {
+    cursor: 'pointer',
+  },
 }));
 
 type ResultProps = {
   className?: string;
   vendros: Vendor[];
+  showDealer: boolean;
 };
 
 const Results: React.FunctionComponent<ResultProps> = ({
   className,
   vendros,
+  showDealer,
 }: ResultProps) => {
   const classes = useStyles();
   const [selectedCustomerIds, setSelectedCustomerIds] = useState<string[]>([]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
+  const navigate = useNavigate();
 
   const handleSelectAll = (
     event: ChangeEvent<HTMLInputElement>,
@@ -119,6 +127,7 @@ const Results: React.FunctionComponent<ResultProps> = ({
                 <TableCell>Location</TableCell>
                 <TableCell>Phone</TableCell>
                 <TableCell>Registration date</TableCell>
+                {showDealer && <TableCell>Dealer Name</TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -135,7 +144,14 @@ const Results: React.FunctionComponent<ResultProps> = ({
                       value="true"
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell
+                    className={classes.cellCursorPointer}
+                    onClick={() =>
+                      navigate(
+                        ROUTES.VENDOR_TRANSACTION(vendor.dealer.id, vendor.id)
+                      )
+                    }
+                  >
                     <Box alignItems="center" display="flex">
                       <Avatar className={classes.avatar} src={vendor.avatarUrl}>
                         {getInitials(vendor.name)}
@@ -153,6 +169,7 @@ const Results: React.FunctionComponent<ResultProps> = ({
                   <TableCell>
                     {moment(vendor.createdAt).format('DD/MM/YYYY')}
                   </TableCell>
+                  {showDealer && <TableCell>{vendor.dealer.name}</TableCell>}
                 </TableRow>
               ))}
             </TableBody>

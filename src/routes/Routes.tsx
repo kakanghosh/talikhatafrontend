@@ -10,6 +10,7 @@ import DashboardView from '../views/dashboard';
 import DealersView from '../views/dealers';
 import NotFoundView from '../views/errors/NotFoundView';
 import SettingsView from '../views/settings';
+import VendorTransactionView from '../views/vendor-transaction';
 import VendorListView from '../views/vendors';
 
 const routes = [
@@ -48,8 +49,16 @@ const routes = [
         element: <AddDealerView />,
       },
       {
-        path: 'vendors',
+        path: 'dealers/:dealerId/vendors/:vendorId/transaction',
+        element: <VendorTransactionView />,
+      },
+      {
+        path: 'dealers/:dealerId/vendors',
         element: <VendorListView />,
+      },
+      {
+        path: 'vendors',
+        element: <VendorListView showDealer />,
       },
       {
         path: 'vendors/create',

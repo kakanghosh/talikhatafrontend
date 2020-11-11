@@ -16,13 +16,18 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core';
+import { useNavigate } from 'react-router-dom';
 import getInitials from '../../utils/getInitials';
-import { Dealer } from './data';
+import { Dealer } from '../../core/models/Models';
+import ROUTES from '../../routes/application-routes';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
   avatar: {
     marginRight: theme.spacing(2),
+  },
+  cellCursorPointer: {
+    cursor: 'pointer',
   },
 }));
 
@@ -39,6 +44,7 @@ const Results: React.FunctionComponent<ResultProps> = ({
   const [selectedCustomerIds, setSelectedCustomerIds] = useState<string[]>([]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
+  const navigate = useNavigate();
 
   const handleSelectAll = (
     event: ChangeEvent<HTMLInputElement>,
@@ -122,39 +128,41 @@ const Results: React.FunctionComponent<ResultProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {dealers.slice(0, limit).map((customer) => (
+              {dealers.slice(0, limit).map((dealer) => (
                 <TableRow
                   hover
-                  key={customer.id}
-                  selected={selectedCustomerIds.indexOf(customer.id) !== -1}
+                  key={dealer.id}
+                  selected={selectedCustomerIds.indexOf(dealer.id) !== -1}
                 >
                   <TableCell padding="checkbox">
                     <Checkbox
-                      checked={selectedCustomerIds.indexOf(customer.id) !== -1}
-                      onChange={(event) => handleSelectOne(event, customer.id)}
+                      checked={selectedCustomerIds.indexOf(dealer.id) !== -1}
+                      onChange={(event) => handleSelectOne(event, dealer.id)}
                       value="true"
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell
+                    className={classes.cellCursorPointer}
+                    onClick={() =>
+                      navigate(ROUTES.VENDORS_OF_DEALER(dealer.id))
+                    }
+                  >
                     <Box alignItems="center" display="flex">
-                      <Avatar
-                        className={classes.avatar}
-                        src={customer.avatarUrl}
-                      >
-                        {getInitials(customer.name)}
+                      <Avatar className={classes.avatar} src={dealer.avatarUrl}>
+                        {getInitials(dealer.name)}
                       </Avatar>
                       <Typography color="textPrimary" variant="body1">
-                        {customer.name}
+                        {dealer.name}
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell>{customer.email}</TableCell>
+                  <TableCell>{dealer.email}</TableCell>
                   <TableCell>
-                    {`${customer.address.city}, ${customer.address.state}, ${customer.address.country}`}
+                    {`${dealer.address.city}, ${dealer.address.state}, ${dealer.address.country}`}
                   </TableCell>
-                  <TableCell>{customer.phone}</TableCell>
+                  <TableCell>{dealer.phone}</TableCell>
                   <TableCell>
-                    {moment(customer.createdAt).format('DD/MM/YYYY')}
+                    {moment(dealer.createdAt).format('DD/MM/YYYY')}
                   </TableCell>
                 </TableRow>
               ))}

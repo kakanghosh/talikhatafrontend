@@ -4,6 +4,7 @@ import Page from '../../components/page/Page';
 import Results from './Result';
 import Toolbar from '../../components/feature-toolbar/FeatureToolbar';
 import data from './data';
+import ROUTES from '../../routes/application-routes';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -14,7 +15,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const VendorListView = () => {
+type VendorListViewProps = {
+  showDealer?: boolean;
+};
+
+const VendorListView: React.FunctionComponent<VendorListViewProps> = ({
+  showDealer = false,
+}: VendorListViewProps) => {
   const classes = useStyles();
   const [vendors] = useState(data);
 
@@ -23,14 +30,18 @@ const VendorListView = () => {
       <Container maxWidth={false}>
         <Toolbar
           resourceName="Vendor"
-          resourceCreateLink="/app/vendors/create"
+          resourceCreateLink={ROUTES.ADD_VENDORS}
         />
         <Box mt={3}>
-          <Results vendros={vendors} />
+          <Results showDealer={showDealer} vendros={vendors} />
         </Box>
       </Container>
     </Page>
   );
+};
+
+VendorListView.defaultProps = {
+  showDealer: false,
 };
 
 export default VendorListView;

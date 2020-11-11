@@ -6,6 +6,7 @@ import App from './components/app/App';
 import reportWebVitals from './reportWebVitals';
 import './i18n/i18n';
 import 'fontsource-roboto';
+import 'react-perfect-scrollbar/dist/css/styles.css';
 
 ReactDOM.render(
   <BrowserRouter>
