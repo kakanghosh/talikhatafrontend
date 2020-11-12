@@ -27,4 +27,5 @@ export default {
   'vendor name': 'দোকানের নাম',
   'new vendor': 'নতুন দোকান',
   'create new vendor': 'নতুন দোকান তৈরি করুন',
+  'first name required': 'আপনার নাম লিখুন',
 };

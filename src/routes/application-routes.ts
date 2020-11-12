@@ -1,5 +1,6 @@
 const ROUTES = {
   ROOT: '/',
+  AUTHENTICATION: '/authentication',
   DASHBOARD: '/app/dashboard',
   DEALERS: '/app/dealers',
   VENDORS_OF_DEALER: (dealerId: string) => `/app/dealers/${dealerId}/vendors`,

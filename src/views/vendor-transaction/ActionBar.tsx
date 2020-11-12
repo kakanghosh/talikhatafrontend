@@ -58,6 +58,7 @@ const ActionBar = () => {
       <Grid container alignItems="center">
         <Grid item md={3} xs={12}>
           <KeyboardDatePicker
+            disableFuture
             className={classes.datePicker}
             disableToolbar
             variant="inline"
@@ -70,10 +71,12 @@ const ActionBar = () => {
             KeyboardButtonProps={{
               'aria-label': 'change date',
             }}
+            maxDate={toDate}
           />
         </Grid>
         <Grid item md={3} xs={12}>
           <KeyboardDatePicker
+            disableFuture
             disableToolbar
             variant="inline"
             format="dd/MM/yyyy"
@@ -85,6 +88,7 @@ const ActionBar = () => {
             KeyboardButtonProps={{
               'aria-label': 'change date',
             }}
+            minDate={fromDate}
           />
         </Grid>
         <Grid item md={3} xs={12}>
