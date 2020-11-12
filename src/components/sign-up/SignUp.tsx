@@ -3,8 +3,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -12,7 +10,11 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { useTranslation } from 'react-i18next';
 import Copyright from '../copyright/CopyRight';
+import ROUTES from '../../routes/application-routes';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -26,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: '100%',
     marginTop: theme.spacing(3),
   },
   submit: {
@@ -34,8 +36,51 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type SignUpForm = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+};
+
 const SignUp = () => {
   const classes = useStyles();
+  const { t } = useTranslation();
+
+  const onSumbitForm = (values: SignUpForm) => {
+    // eslint-disable-next-line no-console
+    console.log(values);
+  };
+
+  const validationSchema = Yup.object({
+    firstName: Yup.string().trim().required(t('first name required')),
+    lastName: Yup.string().trim().required('Last Name is required'),
+    email: Yup.string()
+      .trim()
+      .email('Email is not valid')
+      .required('Email is required'),
+    password: Yup.string().trim().required('Password is required'),
+  });
+
+  const formik = useFormik<SignUpForm>({
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+    },
+    onSubmit: onSumbitForm,
+    validationSchema,
+  });
+
+  const {
+    values,
+    touched,
+    errors,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+  } = formik;
 
   return (
     <Container component="main" maxWidth="xs">
@@ -47,7 +92,7 @@ const SignUp = () => {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form className={classes.form} noValidate>
+        <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -59,6 +104,11 @@ const SignUp = () => {
                 id="firstName"
                 label="First Name"
                 autoFocus
+                value={values.firstName}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                error={Boolean(errors.firstName) && touched.firstName}
+                helperText={touched.firstName && errors.firstName}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -70,6 +120,11 @@ const SignUp = () => {
                 label="Last Name"
                 name="lastName"
                 autoComplete="lname"
+                value={values.lastName}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                error={Boolean(errors.lastName) && touched.lastName}
+                helperText={touched.lastName && errors.lastName}
               />
             </Grid>
             <Grid item xs={12}>
@@ -81,6 +136,11 @@ const SignUp = () => {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                value={values.email}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                error={Boolean(errors.email) && touched.email}
+                helperText={touched.email && errors.email}
               />
             </Grid>
             <Grid item xs={12}>
@@ -93,12 +153,11 @@ const SignUp = () => {
                 type="password"
                 id="password"
                 autoComplete="current-password"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
+                value={values.password}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                error={Boolean(errors.password) && touched.password}
+                helperText={touched.password && errors.password}
               />
             </Grid>
           </Grid>
@@ -113,7 +172,10 @@ const SignUp = () => {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="/authentication?signin=true" variant="body2">
+              <Link
+                href={`${ROUTES.AUTHENTICATION}?signin=true`}
+                variant="body2"
+              >
                 Already have an account? Sign in
               </Link>
             </Grid>

@@ -3,8 +3,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -13,7 +11,10 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
 import Copyright from '../copyright/CopyRight';
+import ROUTES from '../../routes/application-routes';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -35,13 +36,44 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type SignInForm = {
+  email: string;
+  password: string;
+};
+
 const SignIn = () => {
   const classes = useStyles();
   const navigate = useNavigate();
 
   const onSignIn = () => {
-    navigate('/app/dashboard');
+    navigate(ROUTES.DASHBOARD);
   };
+
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .trim()
+      .email('Email is not valid')
+      .required('Email is required'),
+    password: Yup.string().trim().required('Password is required'),
+  });
+
+  const formik = useFormik<SignInForm>({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema,
+    onSubmit: onSignIn,
+  });
+
+  const {
+    values,
+    touched,
+    errors,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+  } = formik;
 
   return (
     <Container component="main" maxWidth="xs">
@@ -53,7 +85,7 @@ const SignIn = () => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <TextField
             variant="outlined"
             margin="normal"
@@ -64,6 +96,11 @@ const SignIn = () => {
             name="email"
             autoComplete="email"
             autoFocus
+            value={values.email}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={Boolean(errors.email) && touched.email}
+            helperText={touched.email && errors.email}
           />
           <TextField
             variant="outlined"
@@ -75,10 +112,11 @@ const SignIn = () => {
             type="password"
             id="password"
             autoComplete="current-password"
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
+            value={values.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={Boolean(errors.password) && touched.password}
+            helperText={touched.password && errors.password}
           />
           <Button
             type="submit"
@@ -86,7 +124,6 @@ const SignIn = () => {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={onSignIn}
           >
             Sign In
           </Button>
@@ -97,7 +134,10 @@ const SignIn = () => {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="/authentication?signin=false" variant="body2">
+              <Link
+                href={`${ROUTES.AUTHENTICATION}?signin=false`}
+                variant="body2"
+              >
                 Don&apos;t have an account? Sign Up
               </Link>
             </Grid>

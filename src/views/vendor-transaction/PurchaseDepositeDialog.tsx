@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react';
+import React from 'react';
 import {
   createStyles,
   Theme,
@@ -26,6 +26,8 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -84,36 +86,53 @@ type PurchaseDepositeDialogProps = {
   title: string;
 };
 
+type PurchaseDepositeForm = {
+  date: Date;
+  amount: number;
+  description?: string;
+};
+
 const PurchaseDepositeDialog = ({
   open,
   setOpen,
   title,
 }: PurchaseDepositeDialogProps) => {
-  const [values, setValues] = useState({
-    date: '',
-    amount: '',
-    description: '',
+  const validationSchema = Yup.object<PurchaseDepositeForm>({
+    date: Yup.date().required('Date is required'),
+    amount: Yup.number()
+      .min(1, 'Amount must be greater than 0')
+      .required('Amount is required'),
+    description: Yup.string().trim().notRequired(),
   });
 
-  const [selectedDate, setSelectedDate] = React.useState<Date | null>(
-    new Date()
-  );
+  const formik = useFormik<PurchaseDepositeForm>({
+    initialValues: {
+      date: new Date(),
+      amount: 1,
+      description: '',
+    },
+    validationSchema,
+    onSubmit: (values: PurchaseDepositeForm, { resetForm }) => {
+      // eslint-disable-next-line no-console
+      console.log(values);
+      resetForm();
+    },
+  });
+
+  const {
+    values,
+    touched,
+    errors,
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    setFieldValue,
+    resetForm,
+  } = formik;
 
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const handleChange = (
-    event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
-    setValues({
-      ...values,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date);
+    resetForm();
   };
 
   return (
@@ -127,35 +146,42 @@ const PurchaseDepositeDialog = ({
           {title}
         </DialogTitle>
         <DialogContent dividers>
-          <form autoComplete="off" noValidate>
+          <form onSubmit={handleSubmit} autoComplete="off" noValidate>
             <Card>
               <CardContent>
                 <Grid container spacing={3}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Grid item md={6} xs={12}>
                       <KeyboardDatePicker
+                        disableFuture
+                        name="date"
+                        required
                         disableToolbar
                         variant="inline"
-                        format="dd/MM/yyyy"
                         margin="normal"
-                        id="date-picker-inline"
+                        format="dd/MM/yy"
+                        id="date"
                         label="Choose date"
-                        value={selectedDate}
-                        onChange={handleDateChange}
-                        KeyboardButtonProps={{
-                          'aria-label': 'change date',
-                        }}
+                        value={values.date}
+                        onChange={(dateProp) => setFieldValue('date', dateProp)}
+                        onBlur={handleBlur}
+                        error={Boolean(errors.date) && Boolean(touched.date)}
+                        helperText={touched.date && errors.date}
                       />
                     </Grid>
                   </MuiPickersUtilsProvider>
 
                   <Grid item md={6} xs={12}>
                     <TextField
+                      required
                       fullWidth
                       label="Amount"
                       name="amount"
                       onChange={handleChange}
                       value={values.amount}
+                      onBlur={handleBlur}
+                      error={Boolean(errors.amount) && touched.amount}
+                      helperText={touched.amount && errors.amount}
                       variant="outlined"
                       type="number"
                     />
@@ -165,9 +191,12 @@ const PurchaseDepositeDialog = ({
                       fullWidth
                       label="Description"
                       name="description"
-                      onChange={handleChange}
                       type="text"
+                      onChange={handleChange}
                       value={values.description}
+                      onBlur={handleBlur}
+                      error={Boolean(errors.description) && touched.description}
+                      helperText={touched.description && errors.description}
                       variant="outlined"
                     />
                   </Grid>
@@ -179,7 +208,7 @@ const PurchaseDepositeDialog = ({
                   <Button autoFocus onClick={handleClose} color="primary">
                     cancel
                   </Button>
-                  <Button autoFocus onClick={handleClose} color="primary">
+                  <Button type="submit" autoFocus color="primary">
                     Save
                   </Button>
                 </DialogActions>
