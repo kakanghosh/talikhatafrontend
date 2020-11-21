@@ -55,9 +55,10 @@ const ActionBar = () => {
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Grid container alignItems="center">
+      <Grid container alignItems="center" justify="space-around">
         <Grid item md={3} xs={12}>
           <KeyboardDatePicker
+            fullWidth
             disableFuture
             className={classes.datePicker}
             disableToolbar
@@ -76,6 +77,7 @@ const ActionBar = () => {
         </Grid>
         <Grid item md={3} xs={12}>
           <KeyboardDatePicker
+            fullWidth
             disableFuture
             disableToolbar
             variant="inline"
