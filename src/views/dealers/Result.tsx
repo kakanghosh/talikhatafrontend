@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
-  Avatar,
   Box,
   Card,
   Checkbox,
@@ -17,8 +16,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { useNavigate } from 'react-router-dom';
-import getInitials from '../../utils/getInitials';
-import { Dealer } from '../../core/models/Models';
+import { Dealership } from '../../core/models/Models';
 import ROUTES from '../../routes/application-routes';
 
 const useStyles = makeStyles((theme) => ({
@@ -33,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 type ResultProps = {
   className?: string;
-  dealers: Dealer[];
+  dealers: Dealership[];
 };
 
 const Results: React.FunctionComponent<ResultProps> = ({
@@ -41,7 +39,7 @@ const Results: React.FunctionComponent<ResultProps> = ({
   dealers,
 }: ResultProps) => {
   const classes = useStyles();
-  const [selectedCustomerIds, setSelectedCustomerIds] = useState<string[]>([]);
+  const [selectedCustomerIds, setSelectedCustomerIds] = useState<number[]>([]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
   const navigate = useNavigate();
@@ -50,7 +48,7 @@ const Results: React.FunctionComponent<ResultProps> = ({
     event: ChangeEvent<HTMLInputElement>,
     checked: boolean
   ) => {
-    let newSelectedCustomerIds: string[];
+    let newSelectedCustomerIds: number[];
 
     if (checked) {
       newSelectedCustomerIds = dealers.map((dealer) => dealer.id);
@@ -63,10 +61,10 @@ const Results: React.FunctionComponent<ResultProps> = ({
 
   const handleSelectOne = (
     event: ChangeEvent<HTMLInputElement>,
-    id: string
+    id: number
   ) => {
     const selectedIndex = selectedCustomerIds.indexOf(id);
-    let newSelectedCustomerIds: string[] = [];
+    let newSelectedCustomerIds: number[] = [];
 
     if (selectedIndex === -1) {
       newSelectedCustomerIds = newSelectedCustomerIds.concat(
@@ -148,19 +146,14 @@ const Results: React.FunctionComponent<ResultProps> = ({
                     }
                   >
                     <Box alignItems="center" display="flex">
-                      <Avatar className={classes.avatar} src={dealer.avatarUrl}>
-                        {getInitials(dealer.name)}
-                      </Avatar>
                       <Typography color="textPrimary" variant="body1">
                         {dealer.name}
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell>{dealer.email}</TableCell>
-                  <TableCell>
-                    {`${dealer.address.city}, ${dealer.address.state}, ${dealer.address.country}`}
-                  </TableCell>
-                  <TableCell>{dealer.phone}</TableCell>
+                  <TableCell>{dealer.emailAddress}</TableCell>
+                  <TableCell>{`${dealer.address}`}</TableCell>
+                  <TableCell>{dealer.phoneNumber}</TableCell>
                   <TableCell>
                     {moment(dealer.createdAt).format('DD/MM/YYYY')}
                   </TableCell>

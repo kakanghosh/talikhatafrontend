@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import {
   Box,
@@ -11,21 +11,12 @@ import {
   TextField,
   makeStyles,
 } from '@material-ui/core';
-
-const areas = [
-  {
-    value: 'uttor-para',
-    label: 'Uttor Para',
-  },
-  {
-    value: 'bus-stand',
-    label: 'Bus Stand',
-  },
-  {
-    value: 'savar-bazar',
-    label: 'Savar Bazar',
-  },
-];
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { gql, useMutation } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
+import ROUTES from '../../routes/application-routes';
+import { Dealership } from '../../core/models/Models';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -35,47 +26,108 @@ type AddDealerFormProps = {
   className?: string;
 };
 
+type AddDealerShipForm = {
+  name: string;
+  emailAddress?: string;
+  phoneNumber?: string;
+  address?: string;
+};
+
+const CREATE_DEALERSHIP_REQUEST = gql`
+  mutation CreateDealerShip(
+    $name: String!
+    $emailAddress: String
+    $phoneNumber: String
+    $address: String
+  ) {
+    createDealerShip(
+      input: {
+        name: $name
+        emailAddress: $emailAddress
+        phoneNumber: $phoneNumber
+        address: $address
+      }
+    ) {
+      id
+      name
+      emailAddress
+      phoneNumber
+      address
+      createdAt
+    }
+  }
+`;
+
 const AddDealerForm: React.FunctionComponent<AddDealerFormProps> = ({
   className,
 }: AddDealerFormProps) => {
   const classes = useStyles();
-  const [values, setValues] = useState({
-    dealerName: '',
-    email: '',
-    phone: '',
-    area: '',
-    address: '',
+  const navigate = useNavigate();
+  const [addDealership, { loading, error }] = useMutation<{
+    createDealerShip: Dealership;
+  }>(CREATE_DEALERSHIP_REQUEST, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      if (data && data.createDealerShip) {
+        navigate(ROUTES.DEALERS);
+      }
+    },
   });
 
-  const handleChange = (
-    event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
-    setValues({
-      ...values,
-      [event.target.name]: event.target.value,
+  const onSubmit = (values: AddDealerShipForm) => {
+    addDealership({
+      variables: { ...values },
     });
   };
+
+  const validationSchema = Yup.object<AddDealerShipForm>({
+    name: Yup.string().trim().required('Dealership name is required'),
+  });
+
+  const formik = useFormik<AddDealerShipForm>({
+    initialValues: {
+      name: '',
+      emailAddress: '',
+      phoneNumber: '',
+      address: '',
+    },
+    validationSchema,
+    onSubmit,
+  });
+
+  const {
+    values,
+    touched,
+    errors,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+  } = formik;
 
   return (
     <form
       autoComplete="off"
       noValidate
       className={clsx(classes.root, className)}
+      onSubmit={handleSubmit}
     >
       <Card>
         <CardHeader subheader="Add new Dealer" title="Dealer" />
+        <p>{error && error.message}</p>
         <Divider />
         <CardContent>
           <Grid container spacing={3}>
             <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
-                helperText="Please specify the dealer name"
                 label="Dealer Name"
-                name="dealerName"
-                onChange={handleChange}
+                name="name"
                 required
-                value={values.dealerName}
+                value={values.name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={Boolean(errors.name) && touched.name}
+                helperText={touched.name && errors.name}
                 variant="outlined"
               />
             </Grid>
@@ -83,9 +135,12 @@ const AddDealerForm: React.FunctionComponent<AddDealerFormProps> = ({
               <TextField
                 fullWidth
                 label="Email Address"
-                name="email"
+                name="emailAddress"
                 onChange={handleChange}
-                value={values.email}
+                onBlur={handleBlur}
+                value={values.emailAddress}
+                error={Boolean(errors.emailAddress) && touched.emailAddress}
+                helperText={touched.emailAddress && errors.emailAddress}
                 variant="outlined"
               />
             </Grid>
@@ -93,10 +148,10 @@ const AddDealerForm: React.FunctionComponent<AddDealerFormProps> = ({
               <TextField
                 fullWidth
                 label="Phone Number"
-                name="phone"
+                name="phoneNumber"
                 onChange={handleChange}
-                type="number"
-                value={values.phone}
+                onBlur={handleBlur}
+                value={values.phoneNumber}
                 variant="outlined"
               />
             </Grid>
@@ -105,35 +160,22 @@ const AddDealerForm: React.FunctionComponent<AddDealerFormProps> = ({
                 fullWidth
                 label="Address"
                 name="address"
+                onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.address}
                 variant="outlined"
-                required
               />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                fullWidth
-                label="Select Area"
-                name="area"
-                onChange={handleChange}
-                select
-                SelectProps={{ native: true }}
-                value={values.area}
-                variant="outlined"
-              >
-                {areas.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </TextField>
             </Grid>
           </Grid>
         </CardContent>
         <Divider />
         <Box display="flex" justifyContent="flex-end" p={2}>
-          <Button color="primary" variant="contained">
+          <Button
+            disabled={loading}
+            color="primary"
+            variant="contained"
+            type="submit"
+          >
             Save
           </Button>
         </Box>

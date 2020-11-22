@@ -37,6 +37,7 @@ const TopBar: React.FunctionComponent<TopBarProps> = ({
   const navigate = useNavigate();
 
   const signout = () => {
+    localStorage.clear();
     navigate('/authentication');
   };
 

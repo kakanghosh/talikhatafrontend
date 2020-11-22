@@ -13,8 +13,10 @@ import Container from '@material-ui/core/Container';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
+import { gql, useMutation } from '@apollo/client';
 import Copyright from '../copyright/CopyRight';
 import ROUTES from '../../routes/application-routes';
+import { User } from '../../core/models/Models';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -43,16 +45,54 @@ type SignUpForm = {
   password: string;
 };
 
-const SignUp = () => {
+const SIGN_UP_REQUEST = gql`
+  mutation RegisterUser(
+    $firstName: String!
+    $lastName: String!
+    $email: String!
+    $password: String!
+  ) {
+    createUser(
+      input: {
+        firstName: $firstName
+        lastName: $lastName
+        email: $email
+        password: $password
+      }
+    ) {
+      id
+      firstName
+      lastName
+      email
+    }
+  }
+`;
+
+type SignUpProps = {
+  gotoSigninPage: (value: boolean) => void;
+};
+
+const SignUp = ({ gotoSigninPage }: SignUpProps) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const [registerUser, { loading, error }] = useMutation<{
+    createUser: User;
+  }>(SIGN_UP_REQUEST, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      if (data && data.createUser) {
+        gotoSigninPage(true);
+      }
+    },
+  });
 
   const onSumbitForm = (values: SignUpForm) => {
-    // eslint-disable-next-line no-console
-    console.log(values);
+    registerUser({
+      variables: { ...values },
+    });
   };
 
-  const validationSchema = Yup.object({
+  const validationSchema = Yup.object<SignUpForm>({
     firstName: Yup.string().trim().required(t('first name required')),
     lastName: Yup.string().trim().required('Last Name is required'),
     email: Yup.string()
@@ -91,6 +131,9 @@ const SignUp = () => {
         </Avatar>
         <Typography component="h1" variant="h5">
           Sign up
+        </Typography>
+        <Typography component="h1" variant="h5">
+          {error && error.message}
         </Typography>
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <Grid container spacing={2}>
@@ -167,6 +210,7 @@ const SignUp = () => {
             variant="contained"
             color="primary"
             className={classes.submit}
+            disabled={loading}
           >
             Sign Up
           </Button>
