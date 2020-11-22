@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import {
   Avatar,
@@ -18,35 +18,33 @@ import {
   Users as UsersIcon,
 } from 'react-feather';
 import NavItem from './NavItem';
-
-const user = {
-  avatar: '/static/images/avatars/avatar_6.png',
-  name: 'Kakan Ghosh',
-};
+import ROUTES from '../../../routes/application-routes';
+import { TOKEN } from '../../../core/constants/appconstants';
+import { User } from '../../../core/models/Models';
 
 const items = [
   {
-    href: '/app/dashboard',
+    href: ROUTES.DASHBOARD,
     icon: BarChartIcon,
     title: 'Dashboard',
   },
   {
-    href: '/app/dealers',
+    href: ROUTES.DEALERS,
     icon: UsersIcon,
     title: 'Dealers',
   },
   {
-    href: '/app/vendors',
+    href: ROUTES.VENDORS,
     icon: ShoppingBagIcon,
     title: 'Vendors',
   },
   {
-    href: '/app/account',
+    href: ROUTES.ACCOUNT,
     icon: UserIcon,
     title: 'Account',
   },
   {
-    href: '/app/settings',
+    href: ROUTES.SETTINGS,
     icon: SettingsIcon,
     title: 'Settings',
   },
@@ -79,6 +77,10 @@ const NavBar: React.FunctionComponent<NavBarProps> = ({
 }: NavBarProps) => {
   const classes = useStyles();
   const location = useLocation();
+  const [user, setUser] = useState({
+    avatar: '/static/images/avatars/avatar_6.png',
+    fullName: '',
+  });
 
   useEffect(() => {
     if (openMobile && onMobileClose) {
@@ -87,6 +89,19 @@ const NavBar: React.FunctionComponent<NavBarProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
+  useEffect(() => {
+    const userStr = localStorage.getItem(TOKEN.TOKEN_OBJECT_STORAGE);
+    if (userStr) {
+      const userObj: User = JSON.parse(userStr);
+      setUser((userPre) => {
+        return {
+          ...userPre,
+          fullName: `${userObj.firstName} ${userObj.lastName}`,
+        };
+      });
+    }
+  }, [user.fullName]);
+
   const content = (
     <Box height="100%" display="flex" flexDirection="column">
       <Box alignItems="center" display="flex" flexDirection="column" p={2}>
@@ -94,10 +109,10 @@ const NavBar: React.FunctionComponent<NavBarProps> = ({
           className={classes.avatar}
           component={RouterLink}
           src={user.avatar}
-          to="/app/account"
+          to={ROUTES.ACCOUNT}
         />
         <Typography color="textPrimary" variant="h5">
-          {user.name}
+          {user.fullName}
         </Typography>
       </Box>
       <Divider />

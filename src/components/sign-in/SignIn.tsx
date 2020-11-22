@@ -13,8 +13,11 @@ import Container from '@material-ui/core/Container';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
+import { gql, useMutation } from '@apollo/client';
+import jwt_decode from 'jwt-decode';
 import Copyright from '../copyright/CopyRight';
 import ROUTES from '../../routes/application-routes';
+import { TOKEN } from '../../core/constants/appconstants';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -41,12 +44,36 @@ type SignInForm = {
   password: string;
 };
 
+const SIGN_IN_REQUEST = gql`
+  mutation Login($email: String!, $password: String!) {
+    login(input: { email: $email, password: $password })
+  }
+`;
+
 const SignIn = () => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const [signInUser, { loading, error }] = useMutation<{ login: string }>(
+    SIGN_IN_REQUEST,
+    {
+      errorPolicy: 'all',
+      onCompleted: (data) => {
+        if (data && data.login) {
+          localStorage.setItem(TOKEN.ACCESS_TOKEN, data.login);
+          localStorage.setItem(
+            TOKEN.TOKEN_OBJECT_STORAGE,
+            JSON.stringify(jwt_decode(data.login))
+          );
+          navigate(ROUTES.DASHBOARD);
+        }
+      },
+    }
+  );
 
-  const onSignIn = () => {
-    navigate(ROUTES.DASHBOARD);
+  const onSignIn = (values: SignInForm) => {
+    signInUser({
+      variables: { ...values },
+    });
   };
 
   const validationSchema = Yup.object({
@@ -84,6 +111,9 @@ const SignIn = () => {
         </Avatar>
         <Typography component="h1" variant="h5">
           Sign in
+        </Typography>
+        <Typography component="h1" variant="h5">
+          {error && error.message}
         </Typography>
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <TextField
@@ -124,6 +154,7 @@ const SignIn = () => {
             variant="contained"
             color="primary"
             className={classes.submit}
+            disabled={loading}
           >
             Sign In
           </Button>

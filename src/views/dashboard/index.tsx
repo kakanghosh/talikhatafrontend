@@ -16,7 +16,6 @@ const useStyles = makeStyles((theme) => ({
 
 const DashboardView = () => {
   const classes = useStyles();
-
   return (
     <Page className={classes.root} title="Dashboard">
       <Container maxWidth={false}>

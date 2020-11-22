@@ -5,34 +5,40 @@ export type Address = {
   street: string;
 };
 
-export interface Dealer {
-  id: string;
-  address: Address;
-  avatarUrl: string;
+export interface Dealership {
+  id: number;
+  address: string;
   createdAt: number;
-  email: string;
+  emailAddress: string;
   name: string;
-  phone: string;
+  phoneNumber: string;
   vendors?: PartialVendor[];
 }
 
 export interface PartialDealer {
-  id: string;
+  id: number;
   name: string;
 }
 
 export interface Vendor {
-  id: string;
-  address: Address;
+  id: number;
+  address: string;
   avatarUrl: string;
   createdAt: number;
-  email: string;
+  emailAddress: string;
   name: string;
-  phone: string;
-  dealer: PartialDealer;
+  phoneNumber: string;
+  dealerShip: PartialDealer;
 }
 
 export interface PartialVendor {
-  id: string;
+  id: number;
   name: string;
+}
+
+export interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
 }

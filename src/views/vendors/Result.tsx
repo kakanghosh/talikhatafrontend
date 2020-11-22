@@ -43,7 +43,7 @@ const Results: React.FunctionComponent<ResultProps> = ({
   showDealer,
 }: ResultProps) => {
   const classes = useStyles();
-  const [selectedCustomerIds, setSelectedCustomerIds] = useState<string[]>([]);
+  const [selectedCustomerIds, setSelectedCustomerIds] = useState<number[]>([]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ const Results: React.FunctionComponent<ResultProps> = ({
     event: ChangeEvent<HTMLInputElement>,
     checked: boolean
   ) => {
-    let newSelectedCustomerIds: string[];
+    let newSelectedCustomerIds: number[];
 
     if (checked) {
       newSelectedCustomerIds = vendros.map((vendor) => vendor.id);
@@ -65,10 +65,10 @@ const Results: React.FunctionComponent<ResultProps> = ({
 
   const handleSelectOne = (
     event: ChangeEvent<HTMLInputElement>,
-    id: string
+    id: number
   ) => {
     const selectedIndex = selectedCustomerIds.indexOf(id);
-    let newSelectedCustomerIds: string[] = [];
+    let newSelectedCustomerIds: number[] = [];
 
     if (selectedIndex === -1) {
       newSelectedCustomerIds = newSelectedCustomerIds.concat(
@@ -148,7 +148,10 @@ const Results: React.FunctionComponent<ResultProps> = ({
                     className={classes.cellCursorPointer}
                     onClick={() =>
                       navigate(
-                        ROUTES.VENDOR_TRANSACTION(vendor.dealer.id, vendor.id)
+                        ROUTES.VENDOR_TRANSACTION(
+                          vendor.dealerShip.id,
+                          vendor.id
+                        )
                       )
                     }
                   >
@@ -161,15 +164,15 @@ const Results: React.FunctionComponent<ResultProps> = ({
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell>{vendor.email}</TableCell>
-                  <TableCell>
-                    {`${vendor.address.city}, ${vendor.address.state}, ${vendor.address.country}`}
-                  </TableCell>
-                  <TableCell>{vendor.phone}</TableCell>
+                  <TableCell>{vendor.emailAddress}</TableCell>
+                  <TableCell>{vendor.address}</TableCell>
+                  <TableCell>{vendor.phoneNumber}</TableCell>
                   <TableCell>
                     {moment(vendor.createdAt).format('DD/MM/YYYY')}
                   </TableCell>
-                  {showDealer && <TableCell>{vendor.dealer.name}</TableCell>}
+                  {showDealer && (
+                    <TableCell>{vendor.dealerShip.name}</TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>
